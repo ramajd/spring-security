@@ -41,7 +41,7 @@ public class UserService {
                         user.getPassword()));
 
         if (authentication.isAuthenticated())
-            return jwtService.genrateToken(user);
+            return jwtService.generateToken(user);
         else
             return "fail";
     }
