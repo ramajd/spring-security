@@ -3,9 +3,11 @@ package io.github.ramajd.SpringSecurityDemo.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,24 +26,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-//        http.csrf(customizer -> customizer.disable());
-//        Customizer<CsrfConfigurer<HttpSecurity>> customCsrf = new Customizer<CsrfConfigurer<HttpSecurity>>() {
-//            @Override
-//            public void customize(CsrfConfigurer<HttpSecurity> customizer) {
-//                customizer.disable();
-//            }
-//        };
-//        http.csrf(customCsrf);
+        // http.csrf(customizer -> customizer.disable());
+        // Customizer<CsrfConfigurer<HttpSecurity>> customCsrf = new
+        // Customizer<CsrfConfigurer<HttpSecurity>>() {
+        // @Override
+        // public void customize(CsrfConfigurer<HttpSecurity> customizer) {
+        // customizer.disable();
+        // }
+        // };
+        // http.csrf(customCsrf);
 
-//        http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
-////        http.formLogin(Customizer.withDefaults());
-//        http.httpBasic(Customizer.withDefaults());
-//        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        // http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
+        //// http.formLogin(Customizer.withDefaults());
+        // http.httpBasic(Customizer.withDefaults());
+        // http.sessionManagement(session ->
+        // session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req.anyRequest().authenticated())
-//                 .formLogin(Customizer.withDefaults())
+                .authorizeHttpRequests(req -> req
+                        .requestMatchers("register", "login").permitAll()
+                        .anyRequest().authenticated())
+                // .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
@@ -56,21 +62,27 @@ public class SecurityConfig {
         return provider;
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-//        UserDetails user1 = User.builder()
-//                .username("reza")
-//                .password(encoder.encode("123"))
-//                .roles("USER")
-//                .build();
-//
-//        UserDetails user2 = User.builder()
-//                .username("saeed")
-//                .password(encoder.encode("456"))
-//                .roles("ADMIN")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(user1, user2);
-//    }
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    // @Bean
+    // public UserDetailsService userDetailsService() {
+    // PasswordEncoder encoder =
+    // PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    // UserDetails user1 = User.builder()
+    // .username("reza")
+    // .password(encoder.encode("123"))
+    // .roles("USER")
+    // .build();
+    //
+    // UserDetails user2 = User.builder()
+    // .username("saeed")
+    // .password(encoder.encode("456"))
+    // .roles("ADMIN")
+    // .build();
+    //
+    // return new InMemoryUserDetailsManager(user1, user2);
+    // }
 }
